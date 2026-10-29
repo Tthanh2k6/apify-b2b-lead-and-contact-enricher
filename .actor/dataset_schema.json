@@ -1,0 +1,34 @@
+{
+  "actorSpecification": 1,
+  "fields": {},
+  "views": {
+    "overview": {
+      "title": "Enriched B2B Leads Overview",
+      "transformation": {
+        "fields": [
+          "url",
+          "company_name",
+          "emails",
+          "phones",
+          "social_profiles",
+          "tech_stack",
+          "json_ld_types",
+          "status_code"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "url": { "label": "Website URL", "format": "link" },
+          "company_name": { "label": "Company / Site Title", "format": "text" },
+          "emails": { "label": "Verified Emails", "format": "array" },
+          "phones": { "label": "Phone Numbers", "format": "array" },
+          "social_profiles": { "label": "Social Profiles", "format": "object" },
+          "tech_stack": { "label": "Detected Tech Stack", "format": "array" },
+          "json_ld_types": { "label": "JSON-LD Entities", "format": "array" },
+          "status_code": { "label": "HTTP Status", "format": "number" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "title": "B2B Website Contact, Social Links & Tech Stack Enricher Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Target Company URLs",
+      "type": "array",
+      "description": "List of company or e-commerce website URLs to enrich with contact details, social links, JSON-LD metadata, and tech stack fingerprints.",
+      "editor": "requestListSources",
+      "prefill": [
+        { "url": "https://books.toscrape.com" },
+        { "url": "https://quotes.toscrape.com" }
+      ]
+    },
+    "followContactPages": {
+      "title": "Crawl Internal /contact and /about Pages",
+      "type": "boolean",
+      "description": "Automatically discover and fetch up to 2 internal Contact or About pages per domain to maximize email and phone coverage.",
+      "default": true
+    },
+    "maxConcurrency": {
+      "title": "Max Concurrent Requests",
+      "type": "integer",
+      "description": "Maximum number of parallel async HTTP requests.",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 25
+    }
+  },
+  "required": ["startUrls"]
+}
