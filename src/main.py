@@ -5,9 +5,22 @@ social media handles, Schema.org JSON-LD entities, and technology stack fingerpr
 """
 import asyncio
 import json
+import os
 import re
 from urllib.parse import urljoin, urlparse
 from typing import Dict, List, Any, Set
+
+FREE_TIER_MAX_ITEMS = 25
+FREE_TIER_CAP_MSG = (
+    "Free-tier run capped at 25 results. Upgrade Apify plan for unlimited scale "
+    "or contact Trung Thanh Tran on Upwork for custom pipelines."
+)
+
+
+def is_free_tier_at_home() -> bool:
+    is_at_home = os.getenv("APIFY_IS_AT_HOME", "").strip().lower() in ("1", "true", "yes")
+    user_is_paying = os.getenv("APIFY_USER_IS_PAYING", "").strip().lower() in ("1", "true", "yes")
+    return is_at_home and not user_is_paying
 
 import httpx
 from bs4 import BeautifulSoup
@@ -244,13 +257,31 @@ async def main() -> None:
             ]
             follow_contact = bool(actor_input.get("followContactPages", True))
             concurrency = int(actor_input.get("maxConcurrency", 5))
+            max_items = int(actor_input.get("maxItems", 100))
 
             urls = [item["url"] if isinstance(item, dict) else str(item) for item in raw_urls if item]
+            was_capped = False
+            if is_free_tier_at_home() and (len(urls) > FREE_TIER_MAX_ITEMS or max_items > FREE_TIER_MAX_ITEMS):
+                max_items = min(max_items, FREE_TIER_MAX_ITEMS)
+                if len(urls) > FREE_TIER_MAX_ITEMS:
+                    urls = urls[:FREE_TIER_MAX_ITEMS]
+                was_capped = True
+                Actor.log.warning(FREE_TIER_CAP_MSG)
+                await Actor.set_status_message(FREE_TIER_CAP_MSG)
+            else:
+                urls = urls[:max_items]
+
             Actor.log.info(f"Enriching {len(urls)} target URLs (followContactPages={follow_contact})...")
             results = await run_enrichment_batch(urls, follow_contact, concurrency)
+            results = results[:max_items]
             await Actor.push_data(results)
+            if was_capped:
+                await Actor.set_status_message(FREE_TIER_CAP_MSG)
+            else:
+                await Actor.set_status_message(f"Successfully enriched {len(results)} B2B domain records.")
             Actor.log.info(f"Successfully enriched and pushed {len(results)} B2B records.")
     else:
         sample_urls = ["https://books.toscrape.com", "https://quotes.toscrape.com"]
         results = await run_enrichment_batch(sample_urls, follow_contact_pages=True, max_concurrency=4)
         print(json.dumps(results, indent=2))
+

@@ -21,6 +21,7 @@ Fast, lightweight **Python Async (`httpx` + `BeautifulSoup4`) Apify Actor** that
     { "url": "https://books.toscrape.com" },
     { "url": "https://quotes.toscrape.com" }
   ],
+  "maxItems": 25,
   "followContactPages": true,
   "maxConcurrency": 5
 }
@@ -53,25 +54,25 @@ Fast, lightweight **Python Async (`httpx` + `BeautifulSoup4`) Apify Actor** that
 1. Open [Apify Console → Actors → Development → Create new Actor](https://console.apify.com/actors).
 2. Choose **Link Git Repository** and paste:
    `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`
-3. Click **Build** $\rightarrow$ **Start** (to run the prefilled test) $\rightarrow$ **Publication** tab to publish on Apify Store!
+3. Click **Build** → **Start** (to run the prefilled test) → **Publication** tab to publish on Apify Store!
 
 ---
 
 ## 🛠️ Integration with n8n, Make.com & Python
 
-### Python (pify-client)
-`python
+### Python (`apify-client`)
+```python
 from apify_client import ApifyClient
 
 client = ApifyClient('YOUR_APIFY_TOKEN')
-run = client.actor('thanh81646/apify-b2b-lead-and-contact-enricher').call(run_input={})
+run = client.actor('thanh81646/b2b-lead-contact-and-tech-enricher').call(run_input={})
 for item in client.dataset(run['defaultDatasetId']).iterate_items():
     print(item)
-`
+```
 
 ### n8n / Make.com Workflow
 1. Add the official **Apify** node in **n8n** or **Make.com**.
-2. Select **Run an Actor** and choose this Actor (	hanh81646/apify-b2b-lead-and-contact-enricher).
+2. Select **Run an Actor** and choose this Actor (`thanh81646/b2b-lead-contact-and-tech-enricher`).
 3. Map the output Dataset items directly into **Google Sheets**, **HubSpot**, **Airtable**, **PostgreSQL / Supabase**, or **OpenAI Structured Outputs**.
 
 ---
@@ -79,6 +80,12 @@ for item in client.dataset(run['defaultDatasetId']).iterate_items():
 ## 💼 Need a Custom Scraper, Hidden API Extractor, or n8n / AI Workflow?
 
 Built and maintained by **Trung Thanh Tran** (*Python, Playwright & AI Automation Developer*):
-- 🚀 **Hire me on Upwork (1-Day Turnaround /  Starter Packages Available):** [upwork.com/freelancers/trungthanhtrandev](https://www.upwork.com/freelancers/trungthanhtrandev)
+- 🚀 **Hire me on Upwork (1-Day Turnaround / Starter Packages Available):** [upwork.com/freelancers/trungthanhtrandev](https://www.upwork.com/freelancers/trungthanhtrandev)
 - 💻 **GitHub Portfolio:** [github.com/Tthanh2k6](https://github.com/Tthanh2k6)
 - 🌐 **3D Interactive Portfolio:** [portfolio-red-theta-65.vercel.app](https://portfolio-red-theta-65.vercel.app/)
+
+---
+
+## ⚖️ Legal & Independence Disclaimer
+
+**Nominative Fair Use — Public Non-Authenticated Factual Data Only:** This Actor is an independent software utility that processes exclusively publicly accessible, non-authenticated web pages at the user's explicit direction. It does not bypass authentication barriers, login walls, or technical access controls, nor does it store or resell proprietary databases. Any platform or technology names mentioned (such as Shopify, WooCommerce, WordPress, HubSpot, LinkedIn, etc.) are trademarks of their respective owners and are referenced strictly for descriptive identification purposes (*nominative fair use*). Users act as independent Data Controllers and are solely responsible for ensuring their target URLs, rate limits, and downstream data usage comply with applicable regulations (including GDPR and CCPA).
