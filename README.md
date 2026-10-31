@@ -1,19 +1,17 @@
-# B2B Website Contact, Social Links, JSON-LD & Tech Stack Enricher (Apify Actor)
+# B2B Website Contact, Social Links, JSON-LD and Tech Stack Enricher (Apify Actor)
 
-Fast, lightweight **Python Async (`httpx` + `BeautifulSoup4`) Apify Actor** that enriches any list of company or e-commerce URLs with verified public emails, phone numbers, social media profiles, Schema.org `JSON-LD` entities, and technology stack fingerprints.
+An Apify actor in async Python (`httpx` + `BeautifulSoup4`). For each company or shop URL you give it, it fetches the homepage and, if `followContactPages` is on, up to two internal pages whose link or text mentions contact, about, impressum, support or team. It returns:
 
-## ✨ Key Features
+- the page title and meta description;
+- email addresses found in the HTML (regex plus `mailto:` links on the homepage). Asset filenames (`.png`, `.svg`, `.webp`...) and placeholder or telemetry domains (`sentry.io`, `wixpress.com`, `example.com`...) are dropped. The emails are not verified: there is no DNS, MX or SMTP check;
+- phone-number-like strings from the visible text (up to 5, not normalized);
+- social links for LinkedIn, Instagram, Facebook, X/Twitter, YouTube and TikTok (up to 3 each);
+- Schema.org JSON-LD `@type` values (for example `Organization`, `LocalBusiness`, `Product`);
+- a tech-stack guess from regex signatures in the HTML and the `Server` / `X-Powered-By` headers: Shopify, WooCommerce, WordPress, Next.js, Nuxt.js, React, Vue.js, Webflow, HubSpot, Google Tag Manager, GA4, Meta Pixel, Stripe, Intercom, Cloudflare, Nginx, Express.
 
-- **Smart Contact Page Discovery:** Automatically detects and crawls up to 2 internal `/contact`, `/about`, or `/support` pages per domain when `followContactPages` is enabled.
-- **Noise-Free Email Filtering:** Strips false-positive asset strings (`.png`, `.svg`, `.webp`) and telemetry domains (`sentry.io`, `wixpress.com`, `example.com`).
-- **6-Platform Social Graph Extraction:** Captures official profiles on **LinkedIn**, **Instagram**, **Facebook**, **X (Twitter)**, **YouTube**, and **TikTok**.
-- **Technology Stack Fingerprinting:** Identifies **Shopify**, **WooCommerce**, **WordPress**, **Next.js**, **Nuxt.js**, **React**, **Webflow**, **HubSpot**, **Google Tag Manager**, **GA4**, **Meta Pixel**, **Stripe**, **Intercom**, and **Cloudflare**.
-- **Schema.org `JSON-LD` Entity Parsing:** Extracts structured `@type` declarations (`Organization`, `LocalBusiness`, `Product`, `WebSite`).
-- **Low Compute Unit Consumption:** Built on pure async `httpx` (`< 25 MB` RAM overhead) rather than heavy headless browsers, allowing thousands of B2B domains to be enriched for fractions of a cent.
+It does not use a headless browser, so content that only appears after JavaScript runs is not seen.
 
----
-
-## 📥 Input Configuration
+## Input
 
 ```json
 {
@@ -27,9 +25,9 @@ Fast, lightweight **Python Async (`httpx` + `BeautifulSoup4`) Apify Actor** that
 }
 ```
 
----
+Runs on the Apify free tier are capped at 25 URLs.
 
-## 📤 Sample Output Record
+## Output record
 
 ```json
 {
@@ -47,45 +45,31 @@ Fast, lightweight **Python Async (`httpx` + `BeautifulSoup4`) Apify Actor** that
 }
 ```
 
----
+If a request fails, the record is returned with empty fields and the exception text in `error`.
 
-## 🚀 Deploy to Apify Store in 3 Clicks (GitHub Integration)
+## Calling it from Python
 
-1. Open [Apify Console → Actors → Development → Create new Actor](https://console.apify.com/actors).
-2. Choose **Link Git Repository** and paste:
-   `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`
-3. Click **Build** → **Start** (to run the prefilled test) → **Publication** tab to publish on Apify Store!
-
----
-
-## 🛠️ Integration with n8n, Make.com & Python
-
-### Python (`apify-client`)
 ```python
 from apify_client import ApifyClient
 
-client = ApifyClient('YOUR_APIFY_TOKEN')
-run = client.actor('thanh81646/b2b-lead-contact-and-tech-enricher').call(run_input={})
-for item in client.dataset(run['defaultDatasetId']).iterate_items():
+client = ApifyClient("YOUR_APIFY_TOKEN")
+run = client.actor("thanh81646/apify-b2b-lead-and-contact-enricher").call(
+    run_input={"startUrls": [{"url": "https://books.toscrape.com"}]}
+)
+for item in client.dataset(run["defaultDatasetId"]).iterate_items():
     print(item)
 ```
 
-### n8n / Make.com Workflow
-1. Add the official **Apify** node in **n8n** or **Make.com**.
-2. Select **Run an Actor** and choose this Actor (`thanh81646/b2b-lead-contact-and-tech-enricher`).
-3. Map the output Dataset items directly into **Google Sheets**, **HubSpot**, **Airtable**, **PostgreSQL / Supabase**, or **OpenAI Structured Outputs**.
+In n8n or Make.com, use the Apify "Run an Actor" node/module with the same actor ID (`thanh81646/apify-b2b-lead-and-contact-enricher`) and map the dataset items to Google Sheets, a CRM or a database.
 
----
+## Running your own copy
 
-## 💼 Need a Custom Scraper, Hidden API Extractor, or n8n / AI Workflow?
+In the Apify Console, create a new actor from a Git repository, paste `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`, then build and start it. Locally, without the `apify` package installed, `python src/main.py` runs the two sample URLs and prints the JSON.
 
-Built and maintained by **Trung Thanh Tran** (*Python, Playwright & AI Automation Developer*):
-- 🚀 **Hire me on Upwork (1-Day Turnaround / Starter Packages Available):** [upwork.com/freelancers/trungthanhtrandev](https://www.upwork.com/freelancers/trungthanhtrandev)
-- 💻 **GitHub Portfolio:** [github.com/Tthanh2k6](https://github.com/Tthanh2k6)
-- 🌐 **3D Interactive Portfolio:** [portfolio-red-theta-65.vercel.app](https://portfolio-red-theta-65.vercel.app/)
+## Author
 
----
+Trung Thanh Tran: [Upwork](https://www.upwork.com/freelancers/trungthanhtrandev) · [GitHub](https://github.com/Tthanh2k6) · [Apify](https://apify.com/thanh81646)
 
-## ⚖️ Legal & Independence Disclaimer
+## Legal note
 
-**Nominative Fair Use — Public Non-Authenticated Factual Data Only:** This Actor is an independent software utility that processes exclusively publicly accessible, non-authenticated web pages at the user's explicit direction. It does not bypass authentication barriers, login walls, or technical access controls, nor does it store or resell proprietary databases. Any platform or technology names mentioned (such as Shopify, WooCommerce, WordPress, HubSpot, LinkedIn, etc.) are trademarks of their respective owners and are referenced strictly for descriptive identification purposes (*nominative fair use*). Users act as independent Data Controllers and are solely responsible for ensuring their target URLs, rate limits, and downstream data usage comply with applicable regulations (including GDPR and CCPA).
+The actor only reads public, non-authenticated web pages at the user's direction. It does not bypass logins or access controls. Technology and platform names are trademarks of their owners and are used only to identify them. You are responsible for making sure your target URLs, request rates and use of the data comply with applicable law (including GDPR and CCPA).
