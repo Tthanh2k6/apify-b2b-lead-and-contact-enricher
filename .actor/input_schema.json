@@ -9,8 +9,8 @@
       "description": "List of company or e-commerce website URLs to enrich with contact details, social links, JSON-LD metadata, and tech stack fingerprints.",
       "editor": "requestListSources",
       "prefill": [
-        { "url": "https://books.toscrape.com" },
-        { "url": "https://quotes.toscrape.com" }
+        { "url": "https://wordpress.org" },
+        { "url": "https://apify.com" }
       ]
     },
     "maxItems": {

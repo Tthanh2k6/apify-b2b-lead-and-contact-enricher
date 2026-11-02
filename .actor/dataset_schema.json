@@ -21,7 +21,7 @@
         "properties": {
           "url": { "label": "Website URL", "format": "link" },
           "company_name": { "label": "Company / Site Title", "format": "text" },
-          "emails": { "label": "Verified Emails", "format": "array" },
+          "emails": { "label": "Emails (as found, unverified)", "format": "array" },
           "phones": { "label": "Phone Numbers", "format": "array" },
           "social_profiles": { "label": "Social Profiles", "format": "object" },
           "tech_stack": { "label": "Detected Tech Stack", "format": "array" },

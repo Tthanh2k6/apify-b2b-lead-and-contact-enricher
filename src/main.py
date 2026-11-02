@@ -1,6 +1,6 @@
 """
 Apify Store Actor: B2B Website Contact, Social Links, JSON-LD & Tech Stack Enricher
-Extracts verified business emails (filtering out Sentry/Wix/asset noise), phone numbers,
+Extracts business emails as found on the page (not verified; Sentry/Wix/asset noise filtered), phone numbers,
 social media handles, Schema.org JSON-LD entities, and technology stack fingerprints.
 """
 import asyncio
@@ -52,13 +52,23 @@ JUNK_EMAIL_DOMAINS = {
 JUNK_EMAIL_EXTS = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".css", ".js", ".woff", ".ttf")
 
 SOCIAL_PATTERNS = {
-    "linkedin": re.compile(r"https?://(?:[\w]+\.)?linkedin\.com/(?:company|in)/[^\s\"'<>?]+", re.I),
-    "facebook": re.compile(r"https?://(?:[\w]+\.)?facebook\.com/(?!sharer|share|dialog)[^\s\"'<>?]+", re.I),
-    "instagram": re.compile(r"https?://(?:[\w]+\.)?instagram\.com/[^\s\"'<>?]+", re.I),
-    "twitter_x": re.compile(r"https?://(?:[\w]+\.)?(?:twitter\.com|x\.com)/(?!intent|share)[^\s\"'<>?]+", re.I),
-    "youtube": re.compile(r"https?://(?:[\w]+\.)?youtube\.com/(?:@|channel/|c/|user/)[^\s\"'<>?]+", re.I),
-    "tiktok": re.compile(r"https?://(?:[\w]+\.)?tiktok\.com/@[^\s\"'<>?]+", re.I),
+    "linkedin": re.compile(r"https?://(?:[\w]+\.)?linkedin\.com/(?:company|school|showcase)/[^\s\"'<>?\\]+", re.I),
+    "facebook": re.compile(r"https?://(?:[\w]+\.)?facebook\.com/(?!sharer|share|dialog)[^\s\"'<>?\\]+", re.I),
+    "instagram": re.compile(r"https?://(?:[\w]+\.)?instagram\.com/[^\s\"'<>?\\]+", re.I),
+    "twitter_x": re.compile(r"https?://(?:[\w]+\.)?(?:twitter\.com|x\.com)/(?!intent|share|i/|home)[^\s\"'<>?\\]+", re.I),
+    "youtube": re.compile(r"https?://(?:[\w]+\.)?youtube\.com/(?:@|channel/|c/|user/)[^\s\"'<>?\\]+", re.I),
+    "tiktok": re.compile(r"https?://(?:[\w]+\.)?tiktok\.com/@[^\s\"'<>?\\]+", re.I),
 }
+
+def _dedupe_social(urls) -> List[str]:
+    """Drop JSON-escape leftovers and trailing-slash duplicates, keep first spelling."""
+    seen: Dict[str, str] = {}
+    for u in urls:
+        u = u.rstrip("\\")
+        key = re.sub(r"^https?://(?:www\.)?", "", u.rstrip("/").lower())
+        seen.setdefault(key, u)
+    return sorted(seen.values())
+
 
 TECH_SIGNATURES = {
     "Shopify": [r"cdn\.shopify\.com", r"Shopify\.theme"],
@@ -188,7 +198,7 @@ async def enrich_single_url(
         json_ld_types.update(parse_json_ld(soup))
 
         for platform, rx in SOCIAL_PATTERNS.items():
-            found = sorted(set(rx.findall(html)))
+            found = _dedupe_social(rx.findall(html))
             if found:
                 socials[platform] = found[:3]
 
@@ -204,11 +214,11 @@ async def enrich_single_url(
                         emails.update(clean_emails(EMAIL_REGEX.findall(sub_html)))
                         phones.update(m.strip() for m in PHONE_REGEX.findall(sub_soup.get_text(" ", strip=True)))
                         for platform, rx in SOCIAL_PATTERNS.items():
-                            found = sorted(set(rx.findall(sub_html)))
+                            found = _dedupe_social(rx.findall(sub_html))
                             if found:
                                 existing = set(socials.get(platform, []))
                                 existing.update(found)
-                                socials[platform] = sorted(existing)[:3]
+                                socials[platform] = _dedupe_social(existing)[:3]
                 except Exception:
                     continue
     except Exception as exc:
