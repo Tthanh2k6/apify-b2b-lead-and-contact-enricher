@@ -31,21 +31,29 @@ Runs on the Apify free tier are capped at 25 URLs.
 
 ## Output record
 
+Real output for `https://apify.com` (run on 3 Nov 2026, homepage plus contact pages):
+
 ```json
 {
-  "url": "https://books.toscrape.com",
-  "company_name": "All products | Books to Scrape - Sandbox",
-  "meta_description": "",
-  "emails": [],
+  "url": "https://apify.com",
+  "company_name": "Apify: Marketplace of ready-to-run tools for AI",
+  "meta_description": "Thousands of tools to automate your business. Get real-time web data, track competitors, generate leads, and integrate your apps and AI agents.",
+  "emails": ["hello@apify.com", "support@apify.com"],
   "phones": [],
-  "social_profiles": {},
-  "tech_stack": ["Nginx"],
-  "json_ld_types": [],
-  "pages_crawled": 1,
+  "social_profiles": {
+    "linkedin": ["https://www.linkedin.com/company/apify"],
+    "twitter_x": ["https://x.com/apify"],
+    "tiktok": ["https://www.tiktok.com/@apifyoffice", "https://www.tiktok.com/@apifytech"]
+  },
+  "tech_stack": ["Google Tag Manager", "HubSpot", "Intercom", "Next.js"],
+  "json_ld_types": ["Organization", "SoftwareApplication", "WebSite"],
+  "pages_crawled": 3,
   "status_code": 200,
   "error": null
 }
 ```
+
+Emails are returned as found on the pages; they are not mailbox-verified. A site that prints no email or phone returns empty lists.
 
 If a request fails, the record is returned with empty fields and the exception text in `error`.
 
