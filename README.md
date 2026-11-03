@@ -76,6 +76,10 @@ In n8n or Make.com, use the Apify "Run an Actor" node/module with the same actor
 
 In the Apify Console, create a new actor from a Git repository, paste `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`, then build and start it. Locally, without the `apify` package installed, `python src/main.py` runs the two sample URLs and prints the JSON.
 
+## Need a custom version?
+
+If you need extra fields, another website, scheduled runs into Google Sheets, Airtable or a webhook, or an n8n / Make workflow around this actor, email **ttrungthanh90@gmail.com** with the target site and the fields you need, and I will reply with a fixed quote. You can also message me through my [Apify profile](https://apify.com/thanh81646).
+
 ## Author
 
 Trung Thanh Tran: [Upwork](https://www.upwork.com/freelancers/trungthanhtrandev) · [GitHub](https://github.com/Tthanh2k6) · [Apify](https://apify.com/thanh81646)
