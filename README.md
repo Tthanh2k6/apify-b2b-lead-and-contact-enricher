@@ -5,11 +5,11 @@
 An Apify actor in async Python (`httpx` + `BeautifulSoup4`). For each company or shop URL you give it, it fetches the homepage and, if `followContactPages` is on, up to two internal pages whose link or text mentions contact, about, impressum, support or team. It returns:
 
 - the page title and meta description;
-- email addresses found in the HTML (regex plus `mailto:` links on the homepage). Asset filenames (`.png`, `.svg`, `.webp`...) and placeholder or telemetry domains (`sentry.io`, `wixpress.com`, `example.com`...) are dropped. The emails are not verified: there is no DNS, MX or SMTP check;
+- email addresses found in the HTML (regex plus `mailto:` links on the homepage). Asset filenames (`.png`, `.svg`, `.webp`...) and placeholder or telemetry domains (`sentry.io`, `sentry.wixpress.com`, `example.com`...) are dropped. The emails are not verified: there is no DNS, MX or SMTP check;
 - phone-number-like strings from the visible text (up to 5, not normalized);
 - social links for LinkedIn (company pages only, no personal profiles), Instagram, Facebook, X/Twitter, YouTube and TikTok (up to 3 each, duplicates such as trailing-slash variants merged);
 - Schema.org JSON-LD `@type` values (for example `Organization`, `LocalBusiness`, `Product`);
-- a tech-stack guess from regex signatures in the HTML and the `Server` / `X-Powered-By` headers: Shopify, WooCommerce, WordPress, Next.js, Nuxt.js, React, Vue.js, Webflow, HubSpot, Google Tag Manager, GA4, Meta Pixel, Stripe, Intercom, Cloudflare, Nginx, Express.
+- a tech-stack guess from regex signatures in the HTML and the `Server` / `X-Powered-By` headers: Shopify, WooCommerce, WordPress, Next.js, Nuxt.js, React, Vue.js, Webflow, HubSpot, Google Tag Manager, GA4, Meta Pixel, Stripe, Intercom, Cloudflare, Nginx, Express / Node.js.
 
 It does not use a headless browser, so content that only appears after JavaScript runs is not seen.
 

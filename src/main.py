@@ -283,10 +283,16 @@ async def main() -> None:
                 {"url": "https://quotes.toscrape.com"},
             ]
             follow_contact = bool(actor_input.get("followContactPages", True))
-            concurrency = int(actor_input.get("maxConcurrency", 5))
-            max_items = int(actor_input.get("maxItems", 100))
+            # `or default` also covers an explicit null in the input JSON
+            concurrency = int(actor_input.get("maxConcurrency") or 5)
+            max_items = int(actor_input.get("maxItems") or 25)
 
-            urls = [item["url"] if isinstance(item, dict) else str(item) for item in raw_urls if item]
+            # Skip malformed entries (e.g. {} without "url") instead of failing the whole run
+            urls = [
+                (item.get("url") if isinstance(item, dict) else str(item)).strip()
+                for item in raw_urls
+                if item and (not isinstance(item, dict) or item.get("url"))
+            ]
             was_capped = False
             if is_free_tier_at_home() and (len(urls) > FREE_TIER_MAX_ITEMS or max_items > FREE_TIER_MAX_ITEMS):
                 max_items = min(max_items, FREE_TIER_MAX_ITEMS)
