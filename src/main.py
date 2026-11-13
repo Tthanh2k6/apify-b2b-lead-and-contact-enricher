@@ -251,12 +251,42 @@ async def enrich_single_url(
     }
 
 
+def _coerce_positive_int(value: Any, default: int) -> int:
+    """Parse an integer >= 1 from actor input, falling back on empty or invalid values."""
+    if value is None or isinstance(value, bool) or (isinstance(value, str) and not value.strip()):
+        return default
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return parsed if parsed >= 1 else default
+
+
+def _extract_start_urls(raw_urls: Any) -> List[str]:
+    """Normalize startUrls items (dicts or strings), skipping missing or blank URLs."""
+    if not raw_urls:
+        return []
+    urls: List[str] = []
+    for item in raw_urls:
+        if isinstance(item, dict):
+            raw_u = item.get("url")
+        elif item:
+            raw_u = item
+        else:
+            continue
+        if isinstance(raw_u, str):
+            cleaned = raw_u.strip()
+            if cleaned:
+                urls.append(cleaned)
+    return urls
+
+
 async def run_enrichment_batch(
     urls: List[str],
     follow_contact_pages: bool = True,
     max_concurrency: int = 5,
 ) -> List[Dict[str, Any]]:
-    sem = asyncio.Semaphore(max_concurrency)
+    sem = asyncio.Semaphore(max(1, max_concurrency))
     headers = {
         "User-Agent": "Mozilla/5.0 (compatible; B2BLeadEnricherBot/1.0; +https://github.com/Tthanh2k6)"
     }
@@ -283,16 +313,10 @@ async def main() -> None:
                 {"url": "https://quotes.toscrape.com"},
             ]
             follow_contact = bool(actor_input.get("followContactPages", True))
-            # `or default` also covers an explicit null in the input JSON
-            concurrency = int(actor_input.get("maxConcurrency") or 5)
-            max_items = int(actor_input.get("maxItems") or 25)
+            concurrency = _coerce_positive_int(actor_input.get("maxConcurrency"), 5)
+            max_items = _coerce_positive_int(actor_input.get("maxItems"), 25)
 
-            # Skip malformed entries (e.g. {} without "url") instead of failing the whole run
-            urls = [
-                (item.get("url") if isinstance(item, dict) else str(item)).strip()
-                for item in raw_urls
-                if item and (not isinstance(item, dict) or item.get("url"))
-            ]
+            urls = _extract_start_urls(raw_urls)
             was_capped = False
             if is_free_tier_at_home() and (len(urls) > FREE_TIER_MAX_ITEMS or max_items > FREE_TIER_MAX_ITEMS):
                 max_items = min(max_items, FREE_TIER_MAX_ITEMS)
