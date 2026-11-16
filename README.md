@@ -1,6 +1,6 @@
 # B2B Website Contact, Social Links, JSON-LD and Tech Stack Enricher (Apify Actor)
 
-**Try it on Apify Store:** https://apify.com/thanh81646/apify-b2b-lead-and-contact-enricher
+On Apify Store: https://apify.com/thanh81646/apify-b2b-lead-and-contact-enricher (pay per result, from $2.00 per 1,000 results).
 
 An Apify actor in async Python (`httpx` + `BeautifulSoup4`). For each company or shop URL you give it, it fetches the homepage and, if `followContactPages` is on, up to two internal pages whose link or text mentions contact, about, impressum, support or team. It returns:
 
@@ -74,11 +74,11 @@ In n8n or Make.com, use the Apify "Run an Actor" node/module with the same actor
 
 ## Running your own copy
 
-In the Apify Console, create a new actor from a Git repository, paste `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`, then build and start it. Locally, without the `apify` package installed, `python src/main.py` runs the two sample URLs and prints the JSON.
+In the Apify Console, create a new actor from a Git repository, paste `https://github.com/Tthanh2k6/apify-b2b-lead-and-contact-enricher`, then build and start it. Locally, without the `apify` package installed, `python src/main.py` runs the two sample URLs and prints the JSON. `pytest` runs 7 offline tests (input parsing, email filtering, social link de-duplication, tech-stack signatures, JSON-LD and contact-page discovery).
 
 ## Need a custom version?
 
-If you need extra fields, another website, scheduled runs into Google Sheets, Airtable or a webhook, or an n8n / Make workflow around this actor, email **ttrungthanh90@gmail.com** with the target site and the fields you need, and I will reply with a fixed quote. You can also message me through my [Apify profile](https://apify.com/thanh81646).
+If you need extra fields, another website, scheduled runs into Google Sheets, Airtable or a webhook, or an n8n / Make workflow around this actor, email ttrungthanh90@gmail.com with the target site and the fields you need, and I will reply with a fixed quote. You can also message me through my [Apify profile](https://apify.com/thanh81646).
 
 ## Author
 
